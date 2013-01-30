@@ -161,7 +161,7 @@ var drib = {
                 success:function (data) {
                     cachingData.setLastChecked(new Date());
                     cachingData.setCachedShots(JSON.stringify(data));
-                    if (data.query.results.message == 'Not found') {
+                    if (data.query.results.message && data.query.results.message == 'Not found') {
                         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                         console.log('timeout error');
                         window.localStorage.setItem('username', '');
@@ -426,10 +426,8 @@ $(function () {
         c = $(window).scrollTop();
         diff = b+c;
         if (diff >= a-805){
-            //from = cachingData.getUsername();
             from = localStorage.getItem('current');
             what = $("#what").text();
-           // console.log('hello '+ from);
             page++;
             drib.add(page, from);
             

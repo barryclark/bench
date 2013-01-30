@@ -1,8 +1,8 @@
 {
-  "name": "Benchwarmer - The Dribbble New Tab Extention",
-  "version": "1.0",
+  "name": "Benchwarmer - The Dribbble for Chrome New Tab Extention",
+  "version": "1.0.3",
   "manifest_version": 2,
-  "description": "Show the latest Dribbble shots everytime you open up a new tab",
+  "description": "Show the latest Dribbble shots everytime you open up a new tab in Chrome",
   "icons": { "16": "icon-16.png",
              "48": "icon-48.png",
             "128": "icon-128.png" },

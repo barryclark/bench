@@ -1,6 +1,10 @@
 .item .picture {
         width:$picWidth;
         height:$picWidth / 4 * 3;
+        @media screen and (max-width: 1300px) {
+            width: $picWidthSm;
+            height:$picWidthSm / 4 * 3;
+        }
         position: relative;
         border-radius: 1px;
         background: rgba(0,0,0,0.3);
