@@ -253,6 +253,10 @@ a {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			width: 120px;
+			@media screen and (max-width: 1300px) {
+			    width: 100px;
+			    //height:$picWidthSm / 4 * 3;
+			}
 		}
 		.stats {
 			text-align:right;
@@ -290,8 +294,21 @@ a {
 			&.bounceIn {
 				@include animation-name(bounceIn);
 			}
-			&:nth-child(3n+3) {
+			/*&:nth-child(3n+3) {
 				padding-right:0;
+			}*/
+			&.featured {
+				span.featured {
+					position: absolute;
+					top: -8px;
+					right: -9px;
+					background-image: url(img/featured.png);
+					background-repeat: no-repeat;
+					background-size: 100%;
+					width: 63px;
+					height: 62px;
+					z-index: 100;
+				}
 			}
 			.picture {
 				position:relative;

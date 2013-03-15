@@ -56,6 +56,7 @@ var drib = {
     everyone:'/shots/everyone',
     debuts:'/shots/debuts',
     player:'/players/',
+    shot:'/shots/',
 
     /* ================================
        Rewriting call function
@@ -89,25 +90,6 @@ var drib = {
             getShots.buildShots(data.query.results.json.shots, how);
         });
     },
-
-    /*getFollowing:function (playerId) {
-        showing = 3;
-        $('.subInfo').html("<span style='color:#68a4f5'>searching...<span>");
-        var url = drib.host + drib.player + playerId + '/shots/following';
-        var yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + url + '"') + '&format=json&callback=cbfunc';
-        this.req(yql, function (data) {
-            //console.log(data);
-            $('#lookup-player').removeClass('error');
-            // check to see if the user was found: 
-            if (data.query.results.message && data.query.results.message == 'Not found') {
-                drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
-                drib.getPopular();
-                return;
-            }
-            getShots.buildShots(data.query.results.json.shots, how);
-
-        });
-    },*/
 
     req:function (url, cbfunc) {
         /*var lastTimeChecked = cachingData.getLastTimeChecked(),
@@ -161,7 +143,7 @@ var drib = {
                 success:function (data) {
                     cachingData.setLastChecked(new Date());
                     cachingData.setCachedShots(JSON.stringify(data));
-                    if (data.query.results.message && data.query.results.message == 'Not found') {
+                    /*if (data.query.results.message && data.query.results.message == 'Not found') {
                         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                         console.log('timeout error');
                         window.localStorage.setItem('username', '');
@@ -170,29 +152,28 @@ var drib = {
                         page = 1;
                         drib.add(page, 'popular', 'new');
                         return;
-                    }
+                    }*/
                     OnSuccess(data);
-
                 },
                 error:function (x, t, m) {
                     if (t === "timeout") {
                         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                         console.log('timeout error');
-                        window.localStorage.setItem('username', '');
-                        window.localStorage.setItem('load', 'popular');
-                        window.localStorage.setItem('current', 'popular');
-                        page = 1;
-                        drib.add(page, 'popular', 'new');
+                        //window.localStorage.setItem('username', '');
+                        //window.localStorage.setItem('load', 'popular');
+                        //window.localStorage.setItem('current', 'popular');
+                        //page = 1;
+                        //drib.add(page, 'popular', 'new');
                         return;
                     } else {
                         $('#lookup-player').addClass('error');
                         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                         console.log('else timeout error');
-                        window.localStorage.setItem('username', '');
-                        window.localStorage.setItem('load', 'popular');
-                        window.localStorage.setItem('current', 'popular');
-                        page = 1;
-                        drib.add(page, 'popular', 'new');
+                        //window.localStorage.setItem('username', '');
+                        //window.localStorage.setItem('load', 'popular');
+                        //window.localStorage.setItem('current', 'popular');
+                        //page = 1;
+                        //drib.add(page, 'popular', 'new');
                         return;
                     }
                 }
@@ -271,7 +252,8 @@ var getShots = {
             } else {
                 var shotsImg = shots[i].image_url;
             }
-            imgs += '<div class="animate fadeInUp item" style="-webkit-animation-delay: ' + i * 150 + 'ms;">' +
+            imgs += '<div class="animate fadeInUp item">' +
+                //  style="-webkit-animation-delay: ' + i * 150 + 'ms;" <!-- animation styles
                 '    <div class="picture" style="background-image:url('+ shotsImg +');">' +
                 //'        <img class="shot" src="' + shots[i].image_url + '" />' +
                 '       <div class="gradient"><a class="link" href="' + shots[i].url + '"></a></div>' +
@@ -292,6 +274,107 @@ var getShots = {
             this.container.html(imgs);
         } else {
             this.container.append(imgs);
+        }
+    
+    //insert add into a random position 2 per 20
+    var minRand = 3;
+    var maxRand = 12;
+    var ad = 'CVYI6';
+
+    //var min2Rand = 14;
+    //var max2Rand = 20;
+    //var ad2 = 'CVYI6';
+
+    var injectAd = function (min, max, ad) {
+        var rand = Math.random(); //return a decimal between 0 and 1
+        var randSpan = rand * (max - min);
+        var floor = Math.floor(randSpan);
+        var pos = floor + min + ((page - 1) * 20);
+
+        console.log('inject ad');
+
+        // Insert Add Code Here
+        $.ajax({
+            type:'get',
+            url:'https://srv.buysellads.com/ads/' + ad + '.json',
+            success:Success,
+            error:Error,
+            dataType:'jsonp'
+        });
+        function Success(res) {
+
+            console.log(res);
+
+            if (!res.ads[0].shotId) {
+                _gaq.push(['_trackEvent', 'ads', 'api no response', ad]);
+                return;
+            }
+
+            var adId = res.ads[0].shotId,
+                clickUrl = res.ads[0].statlink_default,
+                clickId = clickUrl.substring(clickUrl.lastIndexOf('/') + 1),
+                shotUrl = drib.host + drib.shot + adId;
+                var yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + shotUrl + '"') + '&format=json&callback=cb';
+                console.log('AD ####'+ shotUrl);
+
+
+            $.ajax({
+                   url:yql,
+                   dataType:'jsonp',
+                   jsonp:true,
+                   jsonpCallback:'cb',
+                   timeout:1000,
+                   success:function (data) {
+                    console.log(data);
+                    var shotStr = data.query.results.json,
+                        singleShot = '';
+                        if(shotStr.image_400_url) {
+                            var shotsImg = shotStr.image_400_url;
+                        } else {
+                            var shotsImg = shotStr.image_url;
+                        }
+                        singleShot += '<div class="animate fadeInUp item featured" data-clickid="'+clickId+'" data-shotId="'+ adId +'">' +
+                            '    <span class="featured"></span>' +
+                            '    <div class="picture" style="background-image:url('+ shotsImg +');">' +
+                            //'        <img class="shot" src="' + shots[i].image_url + '" />' +
+                            '       <div class="gradient"><a class="link" href="' + shotStr.url + '"></a></div>' +
+                            '        <div class="underlay">' +
+                            //'            <a class="r round" href="' + shots[i].url + '"><img src="css/img/arrow.png" /></a>' +
+                            '            <a class="i round" href="' + shotStr.player.url + '"><img src="' + shotStr.player.avatar_url + '" /></a>' +
+
+                            '           <div class="shotStats">' +
+                            '              <span class="name"><a href="' + shotStr.player.url + '">' + shotStr.player.name + '</a></span>' +
+                            '              <span class="likes">' + shotStr.likes_count + ' Likes &middot; '+ shotStr.comments_count +' comments</span>' +
+                            '           </div>' +
+                            '        </div>' +
+                            '    </div>' +
+                            '</div>';
+                        console.log(pos);
+                        $('#picsList div:nth-child('+ pos +')').after(singleShot);
+                        _gaq.push(['_trackEvent', 'ad', 'populated ad', adId]);
+
+
+                   },
+                   error:function (x, t, m) {
+                        return;
+                   }
+
+            /*InstaAPI.getFeedItem(adId, function (res) {
+                mainViewModel.feedItems.splice(pos, 0, res);
+                $('#picsList li').eq(pos).attr('data-clickid', clickId).addClass('featured');
+                 _gaq.push(['_trackEvent', 'ads', 'api called', ad]);
+            });*/
+            });
+        }    
+        function Error(response) {
+            console.log('calling error', response);
+
+        }
+    };
+    
+    console.log('call ad injection'+ page);
+        if(page === 1) {
+            injectAd(minRand, maxRand, ad);
         }
     }
 };
@@ -382,13 +465,51 @@ var ui = {
                 drib.userNav('signin');
                 drib.add(page, 'popular', 'new');
             } else {
-                window.localStorage.setItem('username', $(this).val());  
-                window.localStorage.setItem('load', $(this).val());
-                window.localStorage.setItem('current', $(this).val());
-                console.log(userName);
-                drib.userNav('following');
-                page = 1;
-                drib.add(page, $(this).val(), 'new'); 
+                var playerId = $(this).val();
+                $('.subInfo').show().html("<span style='color:#68a4f5'>searching...<span>");
+                var url = drib.host + drib.player + playerId + '/shots/following'; 
+                var yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + url + '"') + '&format=json&callback=cbuser';
+                console.log('####'+ yql);
+                $.ajax({
+                    url:yql,
+                    dataType:'jsonp',
+                    jsonp:true,
+                    jsonpCallback:'cbuser',
+                    timeout:1000,
+                    success:function (data) {
+                        if(data.query.results.message === "Not found") {
+                            $('#lookup-player').addClass('error');
+                            drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
+                            window.localStorage.setItem('username', '');
+                            window.localStorage.setItem('load', 'popular');
+                            window.localStorage.setItem('current', 'popular');
+                            drib.userNav('signin');
+                            page = 1;
+                            drib.add(page, 'popular', 'new');
+                            return;
+                        }
+                        console.log(playerId);
+                        window.localStorage.setItem('username', playerId);  
+                        window.localStorage.setItem('load', playerId);
+                        window.localStorage.setItem('current', playerId);
+                        console.log(userName);
+                        drib.userNav('following');
+                        page = 1;
+                        drib.add(page, playerId, 'new');
+
+                    }, 
+                    error:function (x, t, m) {
+                        $('#lookup-player').addClass('error');
+                        drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
+                        window.localStorage.setItem('username', '');
+                        window.localStorage.setItem('load', 'popular');
+                        window.localStorage.setItem('current', 'popular');
+                        drib.userNav('signin');
+                        page = 1;
+                        drib.add(page, 'popular', 'new');
+                        return;
+                    }
+                });    
             }
         });            
 
@@ -446,6 +567,20 @@ $(function () {
         drib.settings('out');
     });
 
+    $('#picsList').on('click', 'div.featured', function() {
+        console.log('featured clicked');
+        var featClickId = $(this).attr('data-clickid'),
+            featShotId = $(this).attr('data-shotId');
+        _gaq.push(['_trackEvent', 'ad', 'featured clicked', featShotId]);
+
+        $.ajax({
+            type:'post',
+            url:'https://srv.buysellads.com/ads/click/x/' + clickId,
+            //success:Success,
+            //error: Error,
+            dataType:'jsonp'
+        });
+    })
     /* click to close modal window
     $(window).on('click', '.close', function () {
         $(".modalOverlay").delay(250).fadeOut(250);
