@@ -561,7 +561,9 @@ $(function () {
             b = $(window).height(),
             c = $(window).scrollTop();
         diff = b + c;
-        if (diff >= a - 805) {
+        // only load more if there have been loaded some before:
+
+        if (diff >= a - 805 && $('#picsList').height() > 0) {
             from = localStorage.getItem('current');
             what = $("#what").text();
             page++;
