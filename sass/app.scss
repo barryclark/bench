@@ -255,7 +255,6 @@ a {
 			width: 120px;
 			@media screen and (max-width: 1300px) {
 			    width: 100px;
-			    //height:$picWidthSm / 4 * 3;
 			}
 		}
 		.stats {
@@ -273,6 +272,15 @@ a {
 		@include animation(fadeInUp 1s ease-in);
 		margin: auto;
 		width: 100%;
+		#ad {
+			width:$picWidth;
+	        height:$picWidth / 4 * 3;
+	        overflow: hidden;
+	        @media screen and (max-width: 1300px) {
+	            width: $picWidthSm;
+	            height:$picWidthSm / 4 * 3;
+	        }
+		}
 		> div {
 			-webkit-transform: rotate3d(0,0,0,0);
 			width:$picWidth;
@@ -284,6 +292,9 @@ a {
 			display: inline-block;
 			position:relative;
 			background: url('img/ajax-loader.gif') center center no-repeat;
+			&#ad {
+				background: none;
+			}
 			&.animate {
 				-webkit-animation-duration:1s;
 				-webkit-animation-fill-mode:both;
@@ -316,7 +327,57 @@ a {
 					@include box-shadow(inset 0 1px 0 #fff);
 				}
 			}
-			
+			/* For Fusion Ads */
+			#fusion_ad {
+				width:$picWidth;
+		        height:$picWidth / 4 * 3;
+		        //display: block;
+		        overflow: hidden;
+		        float: left;
+		        top: 10%;
+		        @media screen and (max-width: 1300px) {
+		            width: $picWidthSm;
+		            height:$picWidthSm / 4 * 3;
+		        }
+		        position: relative;
+			}
+			.fusionentire {
+				width:$picWidth;
+		        height:$picWidth / 4 * 3;
+		        display: block;
+		        @media screen and (max-width: 1300px) {
+		            width: $picWidthSm;
+		            height:$picWidthSm / 4 * 3;
+		        }
+		        position: relative;
+		        img {
+		        	display: block;
+					margin: 0 auto;
+					padding-top: .4em;
+					
+		        }
+		        .fusiontext {
+		        	font-size: .8em;
+		        	padding-top: .5em;
+		        	display: block;
+		        	text-align: center;
+		        	width: 80%;
+		        	margin: auto;
+		        	line-height: 1.3em;
+		        	@media screen and (max-width: 1300px) {
+		        		font-size: .75em;
+		        	}
+		        }
+			}
+			a {
+				color: #fff;
+				&.poweredBy {
+					font-size: .7em;
+					position: relative;
+					top: -4.2em;
+				}
+			}
+
 		}
 	}
 }

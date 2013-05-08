@@ -16,7 +16,8 @@
         background-size: 100%;    
         background-position: center center;       
         &:hover {
-            -webkit-filter: saturate(50%) brightness(150%); 
+            //-webkit-filter: saturate(50%) brightness(150%); 
+            -webkit-filter: brightness(95%) grayscale(25%); ; 
             background-size: 105%;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.5),
                     0 1px 4px rgba(0,0,0,0.7),

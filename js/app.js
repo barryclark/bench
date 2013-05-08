@@ -86,7 +86,7 @@ var drib = {
             var yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + url + '"') + '&format=json&callback=cbfunc';
         }
         this.req(yql, function (data) {
-            console.log('how:'+ how);
+//            console.log('how:'+ how);
             getShots.buildShots(data.query.results.json.shots, how);
         });
     },
@@ -139,7 +139,7 @@ var drib = {
                 dataType:'jsonp',
                 jsonp:false,
                 jsonpCallback:'cbfunc',
-                timeout:1000,
+                timeout:15000,
                 success:function (data) {
                     cachingData.setLastChecked(new Date());
                     cachingData.setCachedShots(JSON.stringify(data));
@@ -169,6 +169,7 @@ var drib = {
                         $('#lookup-player').addClass('error');
                         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                         console.log('else timeout error');
+                        --page;
                         //window.localStorage.setItem('username', '');
                         //window.localStorage.setItem('load', 'popular');
                         //window.localStorage.setItem('current', 'popular');
@@ -228,9 +229,10 @@ var drib = {
         }
     },
     activeNav:function() {
-            $('.nav li').each(function() {
-                console.log('current:'+ current);
-                console.log('id:' +$(this).attr("id"));
+        var navli = $('.nav li');
+            navli.each(function() {
+                //console.log('current:'+ current);
+                //console.log('id:' +$(this).attr("id"));
                 if($(this).attr('id') == current) {
                     $($(this)).addClass('active').siblings().removeClass('active');
                 } else {
@@ -269,7 +271,7 @@ var getShots = {
                 '    </div>' +
                 '</div>';
         }
-        console.log('how:'+ how);
+ //       console.log('how:'+ how);
         if(how === 'new') {
             this.container.html(imgs);
         } else {
@@ -279,7 +281,7 @@ var getShots = {
     //insert add into a random position 2 per 20
     var minRand = 3;
     var maxRand = 12;
-    var ad = 'CVYI6';
+    var ad = 'CK7IP';
 
     //var min2Rand = 14;
     //var max2Rand = 20;
@@ -291,7 +293,7 @@ var getShots = {
         var floor = Math.floor(randSpan);
         var pos = floor + min + ((page - 1) * 20);
 
-        console.log('inject ad');
+        //console.log('inject ad');
 
         // Insert Add Code Here
         $.ajax({
@@ -305,17 +307,20 @@ var getShots = {
 
             console.log(res);
 
-            if (!res.ads[0].shotId) {
-                _gaq.push(['_trackEvent', 'ads', 'api no response', ad]);
+            /*if (!res.ads[0].shotId) {
+                _gaq.push(['_trackEvent', 'ad', 'api no response', ad]);
                 return;
-            }
+            }*/
 
             var adId = res.ads[0].shotId,
                 clickUrl = res.ads[0].statlink_default,
                 clickId = clickUrl.substring(clickUrl.lastIndexOf('/') + 1),
-                shotUrl = drib.host + drib.shot + adId;
-                var yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + shotUrl + '"') + '&format=json&callback=cb';
-                console.log('AD ####'+ shotUrl);
+                shotUrl = drib.host + drib.shot + adId,
+                yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + shotUrl + '"') + '&format=json&callback=cb',
+                html = res.ads[0].html;
+                
+
+                //console.log('AD ####'+ shotUrl);
 
 
             $.ajax({
@@ -328,7 +333,7 @@ var getShots = {
                     console.log(data);
                     var shotStr = data.query.results.json,
                         singleShot = '';
-                        if(shotStr.image_400_url) {
+                        /*if(shotStr.image_400_url) {
                             var shotsImg = shotStr.image_400_url;
                         } else {
                             var shotsImg = shotStr.image_url;
@@ -351,7 +356,17 @@ var getShots = {
                             '</div>';
                         console.log(pos);
                         $('#picsList div:nth-child('+ pos +')').after(singleShot);
+                        _gaq.push(['_trackEvent', 'ad', 'populated ad', adId]);*/
+                        //console.log(html);
+                        singleShot += ''+html+'<div id="ad" class="animate fadeInUp item"><div id="fusion_ad" data-clickid="'+clickId+'">' +
+                        '       <a class="poweredBy" href="http://fusionads.net">Powered by Fusion</a>'+
+                        '   </div>';
+                        '</div>';
+                        //$('#picsList div:nth-child('+ pos +')').after(singleShot);
+                        console.log('oh high');
+                        $('#picsList div:nth-child('+ 3 +')').after(singleShot);
                         _gaq.push(['_trackEvent', 'ad', 'populated ad', adId]);
+
 
 
                    },
@@ -553,7 +568,7 @@ $(function () {
             drib.add(page, from);
             
         }
-     }, 1000);
+     }, 1500);
 
     $('.subInfo').hide();
 
@@ -567,15 +582,14 @@ $(function () {
         drib.settings('out');
     });
 
-    $('#picsList').on('click', 'div.featured', function() {
-        console.log('featured clicked');
+    $('#picsList').on('click', 'div#fusion_ad', function() {
         var featClickId = $(this).attr('data-clickid'),
             featShotId = $(this).attr('data-shotId');
-        _gaq.push(['_trackEvent', 'ad', 'featured clicked', featShotId]);
-
+        _gaq.push(['_trackEvent', 'ad', 'featured clicked', 'fusionClicked']);
+        console.log('featured clicked ' +featClickId );
         $.ajax({
             type:'post',
-            url:'https://srv.buysellads.com/ads/click/x/' + clickId,
+            url:'https://srv.buysellads.com/ads/click/x/' + clickId +'?redirect=no',
             //success:Success,
             //error: Error,
             dataType:'jsonp'
@@ -612,3 +626,10 @@ _gaq.push(['_trackPageview']);
   ga.src = 'https://ssl.google-analytics.com/ga.js';
   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
+
+/*(function(){
+  var fusion = document.createElement('script');
+  fusion.src = 'https://adn.fusionads.net/api/1.0/ad.js?zoneid=238&rand=' + Math.floor(Math.random()*9999999);
+  fusion.async = true;
+  (document.head || document.getElementsByTagName('head')[0]).appendChild(fusion);
+})();*/

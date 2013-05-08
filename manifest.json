@@ -1,6 +1,6 @@
 {
-  "name": "Benchwarmer - The Dribbble for Chrome New Tab Extention",
-  "version": "1.0.7",
+  "name": "Benchwarmer : Dribbble Tab Chrome Extension",
+  "version": "1.0.9",
   "manifest_version": 2,
   "description": "Show the latest Dribbble shots everytime you open up a new tab in Chrome",
   "icons": { "16": "Icon-16.png",
@@ -15,5 +15,5 @@
       "js": ["js/lib/jquery-1.8.0.js", "js/app.js"]
     }
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://query.yahooapis.com https://platform.twitter.com https://connect.facebook.net https://ssl.google-analytics.com https://srv.buysellads.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://query.yahooapis.com https://adn.fusionads.net https://platform.twitter.com https://connect.facebook.net https://ssl.google-analytics.com https://srv.buysellads.com; object-src 'self'"
 }
