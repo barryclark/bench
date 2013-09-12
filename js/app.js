@@ -1,5 +1,5 @@
 // Comment or uncomment this for production / dev
-//console.log = function(){};
+console.log = function(){};
 var cachingData = new function () {
     // Constants:
     var LAST_CHECKED = "lastChecked",
