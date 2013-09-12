@@ -92,48 +92,6 @@ var drib = {
     },
 
     req:function (url, cbfunc) {
-        /*var lastTimeChecked = cachingData.getLastTimeChecked(),
-         cachedData = cachingData.getCachedShots(),
-         toCheckTime = new Date(),
-         userName = cachingData.getUsername();
-
-         // cache once every 5 minutes:
-         toCheckTime.setMinutes(toCheckTime.getMinutes() - 5);
-
-         // Only call api if the data hasn't been cached or input has changed:
-         if (!lastTimeChecked || (lastTimeChecked > toCheckTime) || userName !== user.val()) {
-         cachingData.setUsername(user.val());
-         $.ajax({
-         url:url,
-         dataType:'jsonp',
-         jsonp:false,
-         jsonpCallback:'cbfunc',
-         timeout:1000,
-         success:function (data) {
-         cachingData.setLastChecked(new Date());
-         cachingData.setCachedShots(JSON.stringify(data));
-
-         OnSuccess(data);
-         },
-         error:function (x, t, m) {
-
-         if (t === "timeout") {
-         drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
-         console.log('timeout error');
-         drib.getPopular();
-         } else {
-         $('#lookup-player').addClass('error');
-         console.log('else timeout error');
-         drib.getPopular();
-         }
-         }
-         });
-         }
-         else {
-         // call on succes with cached data:
-         console.log('cached data');
-         OnSuccess(cachedData);
-         } */
         $.ajax({
             url:url,
             dataType:'jsonp',
@@ -143,38 +101,18 @@ var drib = {
             success:function (data) {
                 cachingData.setLastChecked(new Date());
                 cachingData.setCachedShots(JSON.stringify(data));
-                /*if (data.query.results.message && data.query.results.message == 'Not found') {
-                 drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
-                 console.log('timeout error');
-                 window.localStorage.setItem('username', '');
-                 window.localStorage.setItem('load', 'popular');
-                 window.localStorage.setItem('current', 'popular');
-                 page = 1;
-                 drib.add(page, 'popular', 'new');
-                 return;
-                 }*/
                 OnSuccess(data);
             },
             error:function (x, t, m) {
                 if (t === "timeout") {
                     drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                     console.log('timeout error');
-                    //window.localStorage.setItem('username', '');
-                    //window.localStorage.setItem('load', 'popular');
-                    //window.localStorage.setItem('current', 'popular');
-                    //page = 1;
-                    //drib.add(page, 'popular', 'new');
                     return;
                 } else {
                     $('#lookup-player').addClass('error');
                     drib.showError("We're sorry, we couldn't find that username.  We'll show you the popular shots in the meantime");
                     console.log('else timeout error');
                     --page;
-                    //window.localStorage.setItem('username', '');
-                    //window.localStorage.setItem('load', 'popular');
-                    //window.localStorage.setItem('current', 'popular');
-                    //page = 1;
-                    //drib.add(page, 'popular', 'new');
                     return;
                 }
             }
@@ -278,7 +216,7 @@ var getShots = {
             this.container.append(imgs);
         }
 
-        //insert add into a random position 2 per 20
+        //insert add into a random position 2 per 11
         var minRand = 3;
         var maxRand = 12;
         var ad = 'CK7IP';
@@ -313,7 +251,7 @@ var getShots = {
                  }*/
 
                 var adId = res.ads[0].shotId,
-                    clickUrl = res.ads[0].statlink_default,
+                    clickUrl = res.ads[0].statlink,
                     clickId = clickUrl.substring(clickUrl.lastIndexOf('/') + 1),
                     shotUrl = drib.host + drib.shot + adId,
                     yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + shotUrl + '"') + '&format=json&callback=cb',
@@ -333,38 +271,28 @@ var getShots = {
                         console.log(data);
                         var shotStr = data.query.results.json,
                             singleShot = '';
-                        /*if(shotStr.image_400_url) {
-                         var shotsImg = shotStr.image_400_url;
-                         } else {
-                         var shotsImg = shotStr.image_url;
-                         }
-                         singleShot += '<div class="animate fadeInUp item featured" data-clickid="'+clickId+'" data-shotId="'+ adId +'">' +
-                         '    <span class="featured"></span>' +
-                         '    <div class="picture" style="background-image:url('+ shotsImg +');">' +
-                         //'        <img class="shot" src="' + shots[i].image_url + '" />' +
-                         '       <div class="gradient"><a class="link" href="' + shotStr.url + '"></a></div>' +
-                         '        <div class="underlay">' +
-                         //'            <a class="r round" href="' + shots[i].url + '"><img src="css/img/arrow.png" /></a>' +
-                         '            <a class="i round" href="' + shotStr.player.url + '"><img src="' + shotStr.player.avatar_url + '" /></a>' +
-
-                         '           <div class="shotStats">' +
-                         '              <span class="name"><a href="' + shotStr.player.url + '">' + shotStr.player.name + '</a></span>' +
-                         '              <span class="likes">' + shotStr.likes_count + ' Likes &middot; '+ shotStr.comments_count +' comments</span>' +
-                         '           </div>' +
-                         '        </div>' +
-                         '    </div>' +
-                         '</div>';
-                         console.log(pos);
-                         $('#picsList div:nth-child('+ pos +')').after(singleShot);
-                         _gaq.push(['_trackEvent', 'ad', 'populated ad', adId]);*/
-                        //console.log(html);
-                        singleShot += '' + html + '<div id="ad" class="animate fadeInUp item"><div id="fusion_ad" data-clickid="' + clickId + '">' +
-                            '       <a class="poweredBy" href="http://fusionads.net">Powered by Fusion</a>' +
+                        console.log(shotStr);
+                        console.log(res.ads[0].image);
+                        if(res.ads[0].image) {
+                            singleShot += '<div id="ad" class="animate fadeInUp item">' +
+                            '   <div id="fusion_ad" data-clickid="' + clickId + '">' +
+                            '       <span class="fusionentire">'+
+                            '           <a href="'+ res.ads[0].link+'" target="_blank">' +
+                            '               <img src=" '+ res.ads[0].image +' " class="fusionimg"  border="0" height="100" width="130">' +
+                            '           </a>' +
+                            '       <a href="'+ res.ads[0].link +'" class="fusiontext" title='+ res.ads[0].title +'" target="_top"> '+ res.ads[0].title +' </a>' +
+                            '       <p>'+ res.ads[0].description +'</p>'+
+                            '       </span>'+    
+                            '       <a class="poweredBy" href="http://buysellads.com/buy/detail/173658">Your Ad Here</a>' +
                             '   </div>';
-                        '</div>';
-                        //$('#picsList div:nth-child('+ pos +')').after(singleShot);
-                        console.log('oh high');
-                        $('#picsList div:nth-child(' + 3 + ')').after(singleShot);
+                            '</div>';
+                        } else {
+                            singleShot += '' + html + '<div id="ad" class="animate fadeInUp item"><div id="fusion_ad" data-clickid="' + clickId + '">' +
+                                '       <a class="poweredBy" href="http://fusionads.net">Powered by Fusion</a>' +
+                                '   </div>';
+                            '</div>';
+                        }
+                        $('#picsList div:nth-child(' + pos + ')').after(singleShot);
                         _gaq.push(['_trackEvent', 'ad', 'populated ad', adId]);
 
 
@@ -373,11 +301,6 @@ var getShots = {
                         return;
                     }
 
-                    /*InstaAPI.getFeedItem(adId, function (res) {
-                     mainViewModel.feedItems.splice(pos, 0, res);
-                     $('#picsList li').eq(pos).attr('data-clickid', clickId).addClass('featured');
-                     _gaq.push(['_trackEvent', 'ads', 'api called', ad]);
-                     });*/
                 });
             }
 
@@ -396,56 +319,7 @@ var getShots = {
 
 var ui = {
     init:function () {
-        /*user.bind('blur keyup', function (event) {
-         if (event.type === 'keyup' && event.keyCode !== 13 && event.keyCode !== 10) return;
-
-         // clear cache so that the data is refreshed:
-         cachingData.clearCache();
-
-         var val = $(this).val();
-         if (val == 'debuts') {
-         window.localStorage.setItem('load', $(this).val());
-         drib.getDebuts();
-         return;
-         } else if (val == 'everyone') {
-         window.localStorage.setItem('load', $(this).val());
-         drib.getEveryone();
-         return;
-         } else if (val == 'popular') {
-         window.localStorage.setItem('load', $(this).val());
-         drib.getPopularNoError();
-         return;
-         } else if (val == '') {
-         console.log('setting user to blank');
-         window.localStorage.setItem('load', $(this).val());
-         drib.getPopular();
-         return;
-         }
-
-         window.localStorage.setItem('load', $(this).val());
-         drib.getFollowing($(this).val());
-         });*/
-
-        /*if (userName !== null && userName !== '') {
-         user.val(userName);
-         if (userName == 'debuts') {
-         drib.getDebuts();
-         return;
-         } else if (userName == 'everyone') {
-         drib.getEveryone();
-         return;
-         } else if (userName == 'popular') {
-         drib.getPopularNoError();
-         return;
-         } else {
-         console.log('getFollowing');
-         drib.getFollowing(userName);
-         return;
-         }
-         } else {
-         drib.add(0, 'popular');
-         window.localStorage.setItem('load', 'popular');
-         }*/
+        
         $('.nav li').on('click', function () {
             var from = $(this).attr("id");
 
@@ -591,7 +465,7 @@ $(function () {
         console.log('featured clicked ' + featClickId);
         $.ajax({
             type:'post',
-            url:'https://srv.buysellads.com/ads/click/x/' + clickId + '?redirect=no',
+            url:'https://srv.buysellads.com/ads/click/x/' + featClickId + '?redirect=no',
             //success:Success,
             //error: Error,
             dataType:'jsonp'

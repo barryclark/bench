@@ -369,6 +369,14 @@ a {
 		        	}
 		        }
 			}
+			p {
+				color: white;
+				font-size: .6em;
+				padding-top: 5px;
+				line-height: 1.3em;
+				width: 80%;
+				margin: auto;
+			}
 			a {
 				color: #fff;
 				&.poweredBy {
@@ -476,14 +484,14 @@ Settings Styles
 	input {
 		border:0;
 		background:transparent;
-		font-size:2em;
+		font-size:1em;
 		font-weight:200;
 		letter-spacing:-.01em;
 		color:$blue;
 		font-family: 'Open Sans', sans-serif;
 		padding-top:.5em;
 		border-bottom:1px dashed #333;
-		width:60%;
+		width:100%;
 		&:focus {
 			outline:none;
 		}
