@@ -250,8 +250,13 @@ var getShots = {
                  return;
                  }*/
 
+                if(res.ads[0].statlink) {
+                    clickUrl = res.ads[0].statlink;
+                } else {
+                    clickUrl = res.ads[0].statlink_default;
+                } 
                 var adId = res.ads[0].shotId,
-                    clickUrl = res.ads[0].statlink,
+                    //clickUrl = if(res.ads[0].statlink) {res.ads[0].statlink} else {res.ads[0].statlink_default},
                     clickId = clickUrl.substring(clickUrl.lastIndexOf('/') + 1),
                     shotUrl = drib.host + drib.shot + adId,
                     yql = 'https://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('select * from json where url="' + shotUrl + '"') + '&format=json&callback=cb',
@@ -287,7 +292,7 @@ var getShots = {
                             '   </div>';
                             '</div>';
                         } else {
-                            singleShot += '' + html + '<div id="ad" class="animate fadeInUp item"><div id="fusion_ad" data-clickid="' + clickId + '">' +
+                            singleShot += '' + res.ads[0].html + '<div id="ad" class="animate fadeInUp item"><div id="fusion_ad" data-clickid="' + clickId + '">' +
                                 '       <a class="poweredBy" href="http://fusionads.net">Powered by Fusion</a>' +
                                 '   </div>';
                             '</div>';
